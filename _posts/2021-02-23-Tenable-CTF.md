@@ -11,7 +11,7 @@ comments: true
 I recently particitpated in the Tenable CTF. My main focus was on the Crypto category. In the following I want to describe my solutions of the two harder challenges step-by-step.  
 # Netrunner Encryption
 The challenge provided a website that allowed a user to input a string and encrypt it using AES in ECB mode.
-![very simple UI](/images/netrunner_enc1.png)
+![very simple UI](/assets/img/netrunner_enc1.png)
 Additionally Source Code for the backend was given.  
 {% highlight php linenos %}
 <html>
@@ -54,5 +54,5 @@ Luckily we don't need to know them to solve the challenge. We can recover the un
 First let's examine how ECB mode works:  
 To use a block cipher we divide the plaintext into blocks of a fixed length. In the case of AES the block length is 128 bit(=16 byte).  
 Each block is then independently encrypted with the key. The key for each block is the same. This means that encrypting the same 16 byte plaintext blocks at different points in the cipher will result in the same 16 byte ciphertext blocks.  
-![schematic depiction of ECB mode](/images/ECB_encryption.svg)  
+![schematic depiction of ECB mode](/assets/img/ECB_encryption.svg)  
 We can use this to decipher a single byte at the end of a block. 
