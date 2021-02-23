@@ -55,4 +55,40 @@ First let's examine how ECB mode works:
 To use a block cipher we divide the plaintext into blocks of a fixed length. In the case of AES the block length is 128 bit(=16 byte).  
 Each block is then independently encrypted with the key. The key for each block is the same. This means that encrypting the same 16 byte plaintext blocks at different points in the cipher will result in the same 16 byte ciphertext blocks.  
 ![schematic depiction of ECB mode](/assets/img/ECB_encryption.svg)  
-We can use this to decipher a single byte at the end of a block. 
+We can use this to decipher a single byte at the end of a block. To do this we provide a string that is one byte short of the block length. In this case we input 15 'A's. The first byte of the unknown padding will know be the last byte in the first block. To find the unknown byte in the first block we have to check it against every possible block. Since only the last byte is unknown there are 256 possibilities ('AAA...AAA', 'AAA...AAB' ... 'AAA...AAd'...) which we can get by providing them as our user-controlled string. We can repeat this process for every byte.
+## Code
+{% highlight python linenos %}
+from requests import post
+import requests
+import re
+from requests.adapters import HTTPAdapter
+test_flag = b'flag{b4d_bl0cks_232}'
+s = requests.Session()
+s.mount('http://167.71.246.232:8080/crypto.php', HTTPAdapter(max_retries=20))
+def enc(p):
+    try:
+        resp = s.post('http://167.71.246.232:8080/crypto.php', data={'do_encrypt': True, 'text_to_encrypt': p})
+    except ConnectionError:
+        return enc(p)
+    return re.search('<b>(.*)</b>', resp.content.decode()).group(1)
+
+blocksize = 16
+def get_combi_for_block(a, block):
+    combis = {}
+    for i in range(256):
+        pad = a + i.to_bytes(1, 'little')
+        combis[enc(pad)[block*16:(block + 1)*16]] = i.to_bytes(1, 'little')
+    return combis
+
+def get_next_byte(solved, block):
+    pad = b'a'*(15 - (len(solved) % 16))
+    combis = get_combi_for_block(pad + solved, block)
+    c = enc(pad)
+    return combis[c[block*16:(block + 1)*16]]
+
+solved = b'flag{b4d_bl0cks_'
+while True:
+    b = get_next_byte(solved, len(solved) // 16)
+    solved += b
+    print(solved)
+{% endhighlight %}
