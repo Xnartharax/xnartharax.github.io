@@ -4,8 +4,9 @@ title: Tenable CTF - Netrunner Crypto
 subtitle: Writeup of one of the harder Crypto-Challenges
 #gh-repo: daattali/beautiful-jekyll
 #gh-badge: [star, fork, follow]
-#tags: [test]
+tags: [ctf, crypto]
 comments: true
+published: true
 ---
 
 I recently particitpated in the Tenable CTF. My main focus was on the Crypto category. In the following I want to describe my solutions of the one of the harder challenges step-by-step.  
