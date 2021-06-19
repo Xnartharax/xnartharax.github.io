@@ -104,16 +104,34 @@ Choose a public exponent $e$ (usually 65537)
 
 Build $\phi(n) = (q-1)(p-1)$
 
-Find a $d$ such that $ed = 1 (mod \phi(n))$
+Find a $d$ such that $ed = 1 (\text{mod }\phi(n))$
 
 Publish $(e, n)$ as your public key and keep $d$ private. $p$, $q$ and $\phi(n)$ can be discarded.
 
 To encrypt a message $m$ you simply compute:
 
-$$ c = m^e (mod n) $$
+$$ c = m^e (\text{mod }n) $$
 
 To decrypt with u use your private key:
 
-$$ m = c^d (mod n) $$
+$$ m = c^d (\text{mod }n) $$
 
 So why does this work? Why do we recover the original message? 
+
+The answer is *Euler's theorem* which states:
+
+$$ a^{\phi(n)} = 1 (\text{mod } n) $$
+
+Since we earlier defined $e$ and $d$ such that $ed = 1 (\text{mod }n)$ we know that for some integer k
+
+$$ ed = 1 + k\phi(n) $$
+
+It follows that
+
+$$ c^d = m^{ed} = m^{1 + k\phi(n)} = mm^{k\phi(n)}(\text{mod }n) $$
+
+And with Euler's theorem we know that $m^{phi(n)} = 1 (\text{mod }n)$. So it we conclude that
+
+$$ mm^{k\phi(n)} = mm^{phi(n)}^k = 1^km = m (\text{mod }n) $$
+
+## An alternative to Euler's theorem
