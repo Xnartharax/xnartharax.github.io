@@ -130,8 +130,7 @@ It follows that
 
 $$ c^d = m^{ed} = m^{1 + k\phi(n)} = mm^{k\phi(n)}(\text{mod }n) $$
 
-And with Euler's theorem we know that $m^{phi(n)} = 1 (\text{mod }n)$. So it we conclude that
-
-$$ mm^{k\phi(n)} = mm^{phi(n)}^k = 1^km = m (\text{mod }n) $$
+And with Euler's theorem we know that $m^{phi(n)} = 1 (\text{mod }n)$. So  we conclude that
+$$mm^{k\phi(n)} = mm^{phi(n)}^k = 1^km = m (\text{mod }n) $$
 
 ## An alternative to Euler's theorem
