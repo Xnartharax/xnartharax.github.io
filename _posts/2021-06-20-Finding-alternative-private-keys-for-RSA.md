@@ -96,7 +96,7 @@ Understanding how the solution to this problem works not only requires to know h
 ## A little proof of RSA
 As you probably know if you're reading this writeup the steps of textbook RSA are roughly:  
 {% raw %}
-Choose to LARGE prime  numbers \( p \) and \(q\)
+Choose to LARGE prime  numbers \\( p \\) and \\(q\\)
 
 Build \(n=pq\)
 
