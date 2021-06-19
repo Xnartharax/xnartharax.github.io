@@ -98,17 +98,17 @@ As you probably know if you're reading this writeup the steps of textbook RSA ar
 {% raw %}
 Choose to LARGE prime  numbers \\( p \\) and \\(q\\)
 
-Build \(n=pq\)
+Build \\(n=pq\\)
 
-Choose a public exponent \( e \) (usually 65537)
+Choose a public exponent \\( e \\) (usually 65537)
 
-Build \(\phi(n) = (q-1)(p-1)\)
+Build \\(\phi(n) = (q-1)(p-1)\\)
 
-Find a \( d \) such that \(ed = 1 (\text{mod }\phi(n))\)
+Find a \\( d \\) such that \\(ed = 1 (\text{mod }\phi(n))\\)
 
-Publish \( (e, n) \) as your public key and keep \( d \) private. \( p \) , \( q \) and \( \phi(n) \) can be discarded.
+Publish \\( (e, n) \\) as your public key and keep \\( d \\) private. \\( p \\) , \\( q \\) and \\( \phi(n) \\) can be discarded.
 
-To encrypt a message \( m \) you simply compute:
+To encrypt a message \\( m \\) you simply compute:
 
 $$ c = m^e (\text{mod }n) $$
 
@@ -122,7 +122,7 @@ The answer is *Euler's theorem* which states:
 
 $$ a^{\phi(n)} = 1 (\text{mod } n) $$
 
-Since we earlier defined \( e \) and \( d \) such that \( ed = 1 (\text{mod }n) \) we know that for some integer \( k \)
+Since we earlier defined \\( e \\) and \\( d \\) such that \\( ed = 1 (\text{mod }n) \\) we know that for some integer \\( k \\)
 
 $$ ed = 1 + k\phi(n) $$
 
@@ -130,7 +130,7 @@ It follows that
 
 $$ c^d = m^{ed} = m^{1 + k\phi(n)} = mm^{k\phi(n)}(\text{mod }n) $$
 
-And with Euler's theorem we know that \( m^{phi(n)} = 1 (\text{mod }n) \). So  we conclude that
+And with Euler's theorem we know that \\( m^{phi(n)} = 1 (\text{mod }n) \\). So  we conclude that
 
 $$ mm^{k\phi(n)} = mm^{phi(n)}^k = 1^km = m (\text{mod }n) $$
 
