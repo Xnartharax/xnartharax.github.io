@@ -87,4 +87,28 @@ while 1:
 ```
 
 It follows that choice `2` will provide us with an RSA public key and choice `3` with the corresponding private key. This is kind of strange since RSA challenges usually require breaking the encryption of an unknown message or forging a signature but there is no encrypted message available to the user.  
-The problem of this challenge is presented in choice `4`: provide a private key that successfully decrypts a message which was encrypted using the known public key. Of course this would be trivial if we could just supply the already known private key. So there is a check that prevents us from submitting the known private key or anything equivalent.
+The problem of this challenge is presented in choice `4`: provide a private key that successfully decrypts a message which was encrypted using the known public key. Of course this would be trivial if we could just supply the already known private key. So there is a check that prevents us from submitting the known private key or anything equivalent. 
+
+# The Solution
+
+Understanding how the solution to this problem works not only requires to know how RSA works but also at least a little bit *why* it works. So here is:
+
+## A little proof of RSA
+As you probably know if you're reading this writeup the steps of textbook RSA are roughly:
+
+1. Choose to LARGE prime  numbers $p$ and $q$
+2. Build $n=pq$ 
+3. Choose a public exponent $e$ (usually 65537)
+4. Build $\phi(n) = (q-1)(p-1)$
+5. Find a $d$ such that $ed = 1 (mod \phi(n))$
+6. Publish $(e, n)$ as your public key and keep $d$ private. $p$, $q$ and $\phi(n)$ can be discarded.
+
+To encrypt a message $m$ you simply compute:
+
+$$ c = m^e (mod n) $$
+
+To decrypt with u use your private key:
+
+$$ m = c^d (mod n) $$
+
+So why does this work? Why do we recover the original message? 
