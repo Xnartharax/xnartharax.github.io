@@ -96,12 +96,17 @@ Understanding how the solution to this problem works not only requires to know h
 ## A little proof of RSA
 As you probably know if you're reading this writeup the steps of textbook RSA are roughly:
 
-1. Choose to LARGE prime  numbers $p$ and $q$
-2. Build $n=pq$ 
-3. Choose a public exponent $e$ (usually 65537)
-4. Build $\phi(n) = (q-1)(p-1)$
-5. Find a $d$ such that $ed = 1 (mod \phi(n))$
-6. Publish $(e, n)$ as your public key and keep $d$ private. $p$, $q$ and $\phi(n)$ can be discarded.
+Choose to LARGE prime  numbers $p$ and $q$
+
+Build $n=pq$ 
+
+Choose a public exponent $e$ (usually 65537)
+
+Build $\phi(n) = (q-1)(p-1)$
+
+Find a $d$ such that $ed = 1 (mod \phi(n))$
+
+Publish $(e, n)$ as your public key and keep $d$ private. $p$, $q$ and $\phi(n)$ can be discarded.
 
 To encrypt a message $m$ you simply compute:
 
