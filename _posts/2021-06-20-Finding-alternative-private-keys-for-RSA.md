@@ -95,7 +95,7 @@ Understanding how the solution to this problem works not only requires to know h
 
 ## A little proof of RSA
 As you probably know if you're reading this writeup the steps of textbook RSA are roughly:
-
+{% raw %}
 Choose to LARGE prime  numbers $p$ and $q$
 
 Build $n=pq$ 
@@ -131,6 +131,9 @@ It follows that
 $$ c^d = m^{ed} = m^{1 + k\phi(n)} = mm^{k\phi(n)}(\text{mod }n) $$
 
 And with Euler's theorem we know that $m^{phi(n)} = 1 (\text{mod }n)$. So  we conclude that
+
 $$mm^{k\phi(n)} = mm^{phi(n)}^k = 1^km = m (\text{mod }n) $$
+
+{% endraw %}
 
 ## An alternative to Euler's theorem
