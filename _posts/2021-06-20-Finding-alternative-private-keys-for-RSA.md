@@ -96,45 +96,26 @@ Understanding how the solution to this problem works not only requires to know h
 ## A little proof of RSA
 As you probably know if you're reading this writeup the steps of textbook RSA are roughly:  
 {% raw %}
-Choose to LARGE prime  numbers \\( p \\) and \\(q\\)
-
-Build \\(n=pq\\)
-
-Choose a public exponent \\( e \\) (usually 65537)
-
-Build \\(\phi(n) = (q-1)(p-1)\\)
-
-Find a \\( d \\) such that \\(ed = 1 (\text{mod }\phi(n))\\)
-
-Publish \\( (e, n) \\) as your public key and keep \\( d \\) private. \\( p \\) , \\( q \\) and \\( \phi(n) \\) can be discarded.
-
-To encrypt a message \\( m \\) you simply compute:
-
+Choose to LARGE prime  numbers \\( p \\) and \\(q\\)  
+Build \\(n=pq\\)  
+Choose a public exponent \\( e \\) (usually 65537)  
+Build \\(\phi(n) = (q-1)(p-1)\\)  
+Find a \\( d \\) such that \\(ed = 1 (\text{mod }\phi(n))\\)  
+Publish \\( (e, n) \\) as your public key and keep \\( d \\) private. \\( p \\) , \\( q \\) and \\( \phi(n) \\) can be discarded.  
+To encrypt a message \\( m \\) you simply compute:  
 $$ c = m^e (\text{mod }n) $$
-
-To decrypt with u use your private key:
-
+To decrypt with u use your private key:  
 $$ m = c^d (\text{mod }n) $$
-
-So why does this work? Why do we recover the original message? 
-
-The answer is *Euler's theorem* which states:
-
+So why does this work? Why do we recover the original message?  
+The answer is *Euler's theorem* which states:  
 $$ a^{\phi(n)} = 1 (\text{mod } n) $$
-
-Since we earlier defined \\( e \\) and \\( d \\) such that \\( ed = 1 (\text{mod }n) \\) we know that for some integer \\( k \\)
-
+Since we earlier defined \\( e \\) and \\( d \\) such that \\( ed = 1 (\text{mod }n) \\) we know that for some integer \\( k \\)  
 $$ ed = 1 + k\phi(n) $$
-
-It follows that
-
-$$ c^d = m^{ed} = m^{1 + k\phi(n)} = mm^{k\phi(n)}(\text{mod }n) $$
-
-And with Euler's theorem we know that \\( m^{\phi(n)} = 1 (\text{mod }n) \\). So  we conclude that
-
-$$ mm^{k\phi(n)} = mm^{\phi(n)}^k = 1^km = m (\text{mod }n) $$
-
-With that we understand why RSA works and can move on to the actual exploit.
+It follows that  
+$$ c^d = m^{ed} = m^{1 + k\phi(n)} = mm^{k\phi(n)}(\text{mod }n) $$  
+And with Euler's theorem we know that \\( m^{\phi(n)} = 1 (\text{mod }n) \\). So  we conclude that  
+$$ mm^{k\phi(n)} = mm^{\phi(n)}^k = m1^k = m (\text{mod }n) $$  
+With that we understand why RSA works and can move on to the actual exploit.  
 {% endraw %}
 
 ## An alternative to Euler's theorem
