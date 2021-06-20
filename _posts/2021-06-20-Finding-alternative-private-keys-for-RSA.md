@@ -96,26 +96,127 @@ Understanding how the solution to this problem works not only requires to know h
 ## A little proof of RSA
 As you probably know if you're reading this writeup the steps of textbook RSA are roughly:  
 {% raw %}
-Choose to LARGE prime  numbers \\( p \\) and \\(q\\)  
-Build \\(n=pq\\)  
-Choose a public exponent \\( e \\) (usually 65537)  
-Build \\(\phi(n) = (q-1)(p-1)\\)  
-Find a \\( d \\) such that \\(ed = 1 (\text{mod }\phi(n))\\)  
-Publish \\( (e, n) \\) as your public key and keep \\( d \\) private. \\( p \\) , \\( q \\) and \\( \phi(n) \\) can be discarded.  
+1. Choose to LARGE prime  numbers \\( p \\) and \\(q\\)  
+2. Build \\(n=pq\\)  
+3. Choose a public exponent \\( e \\) (usually 65537)  
+4. Build Euler's totient: \\(\phi(n) = (q-1)(p-1)\\)  
+5. Find a \\( d \\) such that \\(ed \equiv 1\ (\text{mod}\ \phi(n))\\)  
+6. Publish \\( (e, n) \\) as your public key and keep \\( d \\) private. \\( p \\) , \\( q \\) and \\( \phi(n) \\) can be discarded.  
+
 To encrypt a message \\( m \\) you simply compute:  
-$$ c = m^e (\text{mod }n) $$
-To decrypt with u use your private key:  
-$$ m = c^d (\text{mod }n) $$
+
+$$ c \equiv m^e\ (\text{mod}\ n) $$ 
+
+To decrypt use your private key: 
+
+$$ m \equiv c^d\ (\text{mod}\ n)  $$  
+
 So why does this work? Why do we recover the original message?  
 The answer is *Euler's theorem* which states:  
-$$ a^{\phi(n)} = 1 (\text{mod } n) $$
-Since we earlier defined \\( e \\) and \\( d \\) such that \\( ed = 1 (\text{mod }n) \\) we know that for some integer \\( k \\)  
-$$ ed = 1 + k\phi(n) $$
+
+$$ a^{\phi(n)} \equiv 1\ (\text{mod}\ n) $$   
+
+Since we earlier defined \\( e \\) and \\( d \\) such that \\( ed \equiv 1\ (\text{mod}\ n)  \\) we know that for some integer \\( k \\)  
+
+$$ ed = 1 + k\phi(n) $$  
+
 It follows that  
-$$ c^d = m^{ed} = m^{1 + k\phi(n)} = mm^{k\phi(n)}(\text{mod }n) $$  
-And with Euler's theorem we know that \\( m^{\phi(n)} = 1 (\text{mod }n) \\). So  we conclude that  
-$$ mm^{k\phi(n)} = mm^{\phi(n)}^k = m1^k = m (\text{mod }n) $$  
+
+$$ c^d \equiv m^{ed} \equiv m^{1 + k\phi(n)} \equiv mm^{k\phi(n)}\ (\text{mod}\ n) $$  
+
+And with Euler's theorem we know that \\( m^{\phi(n)} \equiv 1\ (\text{mod}\ n)  \\). So  we conclude that  
+
+$$ mm^{k\phi(n)} \equiv m(m^{\phi(n)})^k \equiv m 1^k \equiv m\ (\text{mod}\ n)  $$
+
 With that we understand why RSA works and can move on to the actual exploit.  
 {% endraw %}
 
 ## An alternative to Euler's theorem
+
+The solution for this problem requires us to find an alternative number \\(a\\) that satisfies 
+
+$$ m^a \equiv 1\ (\text{mod}\ n)  $$
+
+So that we can choose \\(ed \equiv 1 \ (\text{mod}\ a) \\) and all the equations above hold.  
+Luckily there is a generalization of Euler's theorem using [Carmichael's Function](https://en.wikipedia.org/wiki/Carmichael_function):
+
+$$ m^{\lambda(n)} \equiv 1\ (\text{mod}\ n)  $$
+
+For a number \\(n = pq\\) that is factorized into only two primes Carmichael's Function is defined as:
+
+$$ \lambda(n) = \text{lcm}(p-1, q-1) $$
+
+We can then compute a new private key \\(d'\\).
+
+$$ ed' \equiv 1\ (\text{mod}\ \text{lcm}(q-1, p-1)) $$
+
+Carmichael's functions is often equal to Euler's totient so we may have to try a few times so that we get a \\(d' \neq d\\).
+
+## Recovering p and q from the private key
+
+There is still one last problem: \\(p\\) and \\(q\\) which we need to compute Carmichael's Function are not directly known. However they can be recovered if we know both the public and the private key. This is done using the following steps:
+
+1. Compute \\(k = ed -1\\)
+2. Repeat until the factorization is known:
+    1. Choose a \\(1 < g < n\\) and a small \\(t\\)
+    2. Compute \\(z = g^{\frac{k}{2^t}}\\)
+    3. Test if either \\(\text{gcd}(z+1, n)\\) or \\(\text{gcd}(z-1, n)\\) is one of the factors
+3. Once you have the first factor \\(q\\) simply compute \\(p = \frac{n}{q}\\)
+
+## The final exploit
+
+Putting it all together the script below first gets private and public key from the server, then recovers \\(p\\) and \\(q\\) and finally constructs a new private key using Carmichael's Function. I had to run the script three times because the new key is not necessarily distinct.
+
+```python
+import random
+from math import gcd, lcm
+
+
+def recover_pq(n, d, e):
+    k = d*e - 1
+    p = None
+    while p is None:
+        g = random.randint(1, n)
+        #print(g)
+        #print(pow(g, k//2, n))
+        for t in range(200):
+            tmp = pow(g, k//(2**t), n)
+            #print(tmp)
+            cand = gcd(tmp-1, n)
+            if cand != 1 and cand != n and n % cand == 0:
+                p = cand
+            cand = gcd(tmp+ 1, n)
+            if cand != 1 and cand != n and n % cand == 0:
+                p = cand
+    q = n//p
+    return p, q
+
+from pwn import *
+
+p = remote('regulus-regulus.hsc.tf', 1337)
+
+p.recvuntil(": ")
+p.sendline("2")
+p.recvuntil('n = ')
+n = int(p.recvline()[:-1])
+e = 0x10001 # standard exponent
+
+p.recvuntil(': ')
+p.sendline('3')
+p.recvuntil('d = ')
+d = int(p.recvline()[:-1])
+
+p_, q_ =  recover_pq(n, d, e)
+print('recovered primes')
+carmichael = lcm(p_-1, q_-1)
+d_ = pow(e, -1, carmichael)
+
+assert d_ % ((q_-1)*(p_-1)) != d
+
+p.recvuntil(': ')
+p.sendline('4')
+p.recvuntil(': ')
+p.sendline(str(d_))
+p.interactive()
+
+```
